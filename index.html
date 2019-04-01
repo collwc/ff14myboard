@@ -1,0 +1,271 @@
+<html>
+    <head>
+        <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"
+        ></script>
+        <script>
+            var serverList = {
+                Aether: [
+                    "Adamantoise",
+                    "Balmung",
+                    "Cactuar",
+                    "Coeurl",
+                    "Faerie",
+                    "Gilgamesh",
+                    "Goblin",
+                    "Jenova",
+                    "Mateus",
+                    "Midgardsormr",
+                    "Sargatanas",
+                    "Siren",
+                    "Zalera"
+                ],
+                Chaos: [
+                    "Cerberus",
+                    "Lich",
+                    "Louisoix",
+                    "Moogle",
+                    "Odin",
+                    "Omega",
+                    "Phoenix",
+                    "Ragnarok",
+                    "Shiva",
+                    "Zodiark"
+                ],
+                Elemental: [
+                    "Aegis",
+                    "Atomos",
+                    "Carbuncle",
+                    "Garuda",
+                    "Gungnir",
+                    "Kujata",
+                    "Ramuh",
+                    "Tonberry",
+                    "Typhon",
+                    "Unicorn"
+                ],
+                Gaia: [
+                    "Alexander",
+                    "Bahamut",
+                    "Durandal",
+                    "Fenrir",
+                    "Ifrit",
+                    "Ridill",
+                    "Tiamat",
+                    "Ultima",
+                    "Valefor",
+                    "Yojimbo",
+                    "Zeromus"
+                ],
+                Mana: [
+                    "Anima",
+                    "Asura",
+                    "Belias",
+                    "Chocobo",
+                    "Hades",
+                    "Ixion",
+                    "Mandragora",
+                    "Masamune",
+                    "Pandaemonium",
+                    "Shinryu",
+                    "Titan"
+                ],
+                Primal: [
+                    "Behemoth",
+                    "Brynhildr",
+                    "Diabolos",
+                    "Excalibur",
+                    "Exodus",
+                    "Famfrit",
+                    "Hyperion",
+                    "Lamia",
+                    "Leviathan",
+                    "Malboro",
+                    "Ultros"
+                ]
+            };
+            var serverListArray = [
+                "Adamantoise",
+                "Aegis",
+                "Alexander",
+                "Anima",
+                "Asura",
+                "Atomos",
+                "Bahamut",
+                "Balmung",
+                "Behemoth",
+                "Belias",
+                "Brynhildr",
+                "Cactuar",
+                "Carbuncle",
+                "Cerberus",
+                "Chocobo",
+                "Coeurl",
+                "Diabolos",
+                "Durandal",
+                "Excalibur",
+                "Exodus",
+                "Faerie",
+                "Famfrit",
+                "Fenrir",
+                "Garuda",
+                "Gilgamesh",
+                "Goblin",
+                "Gungnir",
+                "Hades",
+                "Hyperion",
+                "Ifrit",
+                "Ixion",
+                "Jenova",
+                "Kujata",
+                "Lamia",
+                "Leviathan",
+                "Lich",
+                "Louisoix",
+                "Malboro",
+                "Mandragora",
+                "Masamune",
+                "Mateus",
+                "Midgardsormr",
+                "Moogle",
+                "Odin",
+                "Omega",
+                "Pandaemonium",
+                "Phoenix",
+                "Ragnarok",
+                "Ramuh",
+                "Ridill",
+                "Sargatanas",
+                "Shinryu",
+                "Shiva",
+                "Siren",
+                "Tiamat",
+                "Titan",
+                "Tonberry",
+                "Typhon",
+                "Ultima",
+                "Ultros",
+                "Unicorn",
+                "Valefor",
+                "Yojimbo",
+                "Zalera",
+                "Zeromus",
+                "Zodiark"
+            ];
+
+            $(function() {
+                // 初期化
+                for(key in serverList){
+                    $("#searchDC").append($("<option></option>").html(key));
+                }
+
+                // 検索ボタン押下時の処理
+                $("#searchButton").on("click", function() {
+                    $.ajax({
+                        url: "https://xivapi.com/search",
+                        data: {
+                            indexes: "item",
+                            string: $("#searchStr").val(),
+                            filters: "ItemSearchCategory.ID>=9",
+                            language: "ja",
+                        },
+                        method: "GET",
+                        success: function(result) {
+                            console.log("検索結果", result);
+                            $("#searchresult").html("");
+
+                            for (var i = 0; i < result.Results.length; i++) {
+                                var tmpTag = $("<div></div>");
+                                var tmpLink = $("<a></a>", {
+                                    href: "#",
+                                    id: "searchresultId" + i,
+                                    on: {
+                                        click: function(event) {
+                                            // イベント設定
+                                            console.log(event);
+                                            console.log(event.target.id);
+                                            var id = new String(event.target.id);
+                                            var num = id.replace("searchresultId", "");
+                                            console.log(result);
+                                            console.log(i);
+                                            console.log(result.Results[num]);
+                                            console.log("https://xivapi.com" + result.Results[num].Url);
+
+                                            searchDetail(
+                                                result.Results[num],
+                                                "https://xivapi.com" + result.Results[num].Url
+                                            );
+                                        }
+                                    }
+                                });
+                                tmpLink.html(result.Results[i].Name + "");
+
+                                tmpTag.append(tmpLink);
+                                $("#searchresult").append(tmpTag);
+                            }
+                        }
+                    });
+                });
+            });
+
+            function searchDetail(detail, url) {
+                console.log("clicked url", url);
+                console.log("clicked detail", detail);
+
+                $("#searchDetail").html("<span id='itemname'></span>の最安値<br />");
+                $("#itemname").html(detail.Name);
+
+                $.ajax({
+                    url: "https://xivapi.com/market/item/" + detail.ID,
+                    data: {
+                        dc: $("#searchDC").val()
+                    },
+                    method: "GET",
+                    async: true,
+                    success: function(result) {
+                        console.log("詳細データ", result);
+
+
+                        var tmpTabeTag = $("<table border='1'></table>");
+                        for (key in result) {
+                            if (result[key] != undefined && result[key].Prices[0] != undefined) {
+                                // create row tag
+                                var tmpTrTag = $("<tr></tr>");
+                                var tmpTdServerNameTag = $("<td></td>");
+                                tmpTdServerNameTag.html(key);
+                                var tmpTdPriceTag = $("<td></td>");
+                                tmpTdPriceTag.html(result[key].Prices[0].PricePerUnit);
+
+                                tmpTrTag.append(tmpTdServerNameTag);
+                                tmpTrTag.append(tmpTdPriceTag);
+
+                                tmpTabeTag.append(tmpTrTag);
+
+                            }
+                        }
+
+                        $("#searchDetail").append(tmpTabeTag);
+
+                    }
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <h1>FF14 マーケットボード検索</h1>
+        <div id="search">
+            <input type="text" id="searchStr" />
+            <input type="button" id="searchButton" value="検索" />
+        </div>
+        <hr />
+        DC<select id="searchDC"></select>
+        <div id="searchresult"></div>
+        <hr />
+        <div id="searchDetail"></div>
+        <script>
+        
+        </script>
+    </body>
+</html>
